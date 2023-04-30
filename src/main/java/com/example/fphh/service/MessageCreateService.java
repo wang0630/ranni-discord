@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-public class PingService implements DiscordService<MessageCreateEvent> {
+public class MessageCreateService implements DiscordService<MessageCreateEvent> {
   @Override
   public Class<MessageCreateEvent> getEventType() {
     return MessageCreateEvent.class;

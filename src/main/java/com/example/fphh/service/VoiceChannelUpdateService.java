@@ -47,8 +47,4 @@ public class VoiceChannelUpdateService implements DiscordService<VoiceStateUpdat
         })
         .then();
   }
-
-  private Mono<VoiceChannel> getChannel(VoiceState vs) {
-    return vs.getChannel();
-  }
 }
