@@ -4,6 +4,8 @@ import com.example.fphh.service.DiscordService;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.Event;
+import discord4j.gateway.intent.Intent;
+import discord4j.gateway.intent.IntentSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +24,8 @@ public class DiscordClientConfig {
       GatewayDiscordClient gatewayDiscordClient = DiscordClientBuilder.create(discordClientProperties.getToken())
           .build()
           .gateway()
+          // Enable Guild member intent
+          .setEnabledIntents(IntentSet.of(Intent.GUILD_MEMBERS, Intent.DIRECT_MESSAGES, Intent.GUILD_MESSAGES, Intent.GUILD_VOICE_STATES))
           .login()
           .block();
 

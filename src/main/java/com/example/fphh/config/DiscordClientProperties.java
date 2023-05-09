@@ -11,5 +11,6 @@ import org.springframework.context.annotation.PropertySource;
 @ConfigurationProperties("discord.props")
 public class DiscordClientProperties {
   private String token;
+  private String guildId;
   private String generalTextChannelId;
 }
