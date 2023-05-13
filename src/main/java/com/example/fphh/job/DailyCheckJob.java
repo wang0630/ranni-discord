@@ -54,15 +54,13 @@ public class DailyCheckJob implements Runnable {
 
     Mono<Message> mono1 = gatewayClient.getChannelById(channelId)
         .ofType(TextChannel.class)
-        .flatMap(textChannel -> {
-          return textChannel.createMessage(
-              MessageCreateSpec
-                  .builder()
-                  .content("菈妮來點名～ 哪個小壞壞不上線？ :heart:")
-                  .addComponent(ActionRow.of(confirm, deny))
-                  .build()
-          );
-        });
+        .flatMap(textChannel -> textChannel.createMessage(
+            MessageCreateSpec
+                .builder()
+                .content("菈妮來點名～ 哪個小壞壞不上線？ :heart:")
+                .addComponent(ActionRow.of(confirm, deny))
+                .build()
+        ));
 
     mono1.then(this.replyDailyCheckButton()).subscribe();
   }
@@ -76,26 +74,32 @@ public class DailyCheckJob implements Runnable {
 
       Boolean answer = dailyCheckCacheManager.getCache("dailyCheckCache").get(id.asString(), Boolean.class);
       if (answer != null) {
-        return answer ?
-            e.reply()
-                .withContent("你今天回答過囉～ 等一下見, " + username)
-                 //.withEphemeral(Boolean.TRUE)
-                .then(this.pinDailyCheckMessage()) :
-            e.reply()
-                .withContent("再不來菈妮要把你變不見了喔 :heart: " + username)
-                //.withEphemeral(Boolean.TRUE)
-                .then(this.pinDailyCheckMessage());
+        if (e.getCustomId().equals(CONFIRM_BUTTON_ID_PREFIX)) {
+          dailyCheckCacheManager.getCache("dailyCheckCache").put(id.asString(), true);
+          return e.reply()
+              .withContent(username + " 有空了，菈妮愛你喔 :heart:")
+              .withEphemeral(Boolean.TRUE)
+              .then(this.pinDailyCheckMessage());
+        } else {
+          dailyCheckCacheManager.getCache("dailyCheckCache").put(id.asString(), false);
+          return e.reply()
+              .withContent("再不來菈妮要把你變不見了喔 :heart: " + username)
+              .withEphemeral(Boolean.TRUE)
+              .then(this.pinDailyCheckMessage());
+        }
       }
 
       if (e.getCustomId().equals(CONFIRM_BUTTON_ID_PREFIX)) {
         dailyCheckCacheManager.getCache("dailyCheckCache").put(id.asString(), true);
         return e.reply()
             .withContent("菈妮愛你喔, " + username)
+            .withEphemeral(Boolean.TRUE)
             .then(this.pinDailyCheckMessage());
       } else if (e.getCustomId().equals(DENY_BUTTON_ID_PREFIX)) {
         dailyCheckCacheManager.getCache("dailyCheckCache").put(id.asString(), false);
         return e.reply()
             .withContent("君を大嫌い, " + username)
+            .withEphemeral(Boolean.TRUE)
             .then(this.pinDailyCheckMessage());
       }
 
